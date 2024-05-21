@@ -283,6 +283,13 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+  mongo-lake:
+    image: mongo
+    container_name: mongo-lake
+    volumes:
+      - /Users/glenn/Documents/ProgrammingStuff/spreads/mongo-data:/data/db
+    ports:
+      - 27017:27017
 
 volumes:
   postgres-db-volume:
