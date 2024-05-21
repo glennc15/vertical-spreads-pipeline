@@ -4,7 +4,7 @@ from airflow import DAG
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.mongo.hooks.mongo import MongoHook
-import pymongo
+# import pymongo
 from pymongo import MongoClient
 
 import datetime
@@ -24,11 +24,11 @@ def _get_spot_record(**context):
     print("_get_spot_record")
 
     try:
-        # hook = MongoHook(mongo_conn_id="mongo_connection")
-        # mongo_client = hook.get_conn()
+        hook = MongoHook(mongo_conn_id="mongo-lake")
+        mongo_client = hook.get_conn()
 
-        mongo_address = "mongodb://192.168.1.178:27017/"
-        mongo_client = MongoClient(mongo_address)
+        # mongo_address = "mongodb://192.168.1.178:27017/"
+        # mongo_client = MongoClient(mongo_address)
 
         # search_query = {
         #     "timestamp": {"$lt": datetime.datetime.now()}
