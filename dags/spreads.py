@@ -5,7 +5,7 @@ from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.mongo.hooks.mongo import MongoHook
 # import pymongo
-from pymongo import MongoClient
+# from pymongo import MongoClient
 
 import datetime
 
