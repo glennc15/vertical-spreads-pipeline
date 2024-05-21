@@ -29,7 +29,6 @@ def test_dag_integrity(dag_file):
     assert dag_objects
 
     for dag in dag_objects:
-        print(f"testing {dag}")
         # Test cycles
         # dag.test_cycle()
         check_cycle(dag)
