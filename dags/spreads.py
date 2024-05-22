@@ -4,6 +4,8 @@ from airflow import DAG
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.mongo.hooks.mongo import MongoHook
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+
 # import pymongo
 # from pymongo import MongoClient
 
@@ -54,6 +56,12 @@ with DAG(
     start_date=airflow.utils.dates.days_ago(1),
     schedule_interval="@daily"
 ) as dag:
+
+    create_expiration_table = PostgresOperator(
+        task_id="create_expiration_table",
+        postgres_conn_id="postgres-spreads",
+        sql="sql/expiration_schema.sql"
+    )
 
     # build_spot_record = DummyOperator(
     #     task_id="build_spot_record"
@@ -115,7 +123,7 @@ with DAG(
     )
 
 
-    build_spot_record >> write_spot_record >> clean_up_spot_temp_files >> build_expiration_records >> write_expiration_records >> clean_up_expiration_temp_files
+    create_expiration_table >> build_spot_record >> write_spot_record >> clean_up_spot_temp_files >> build_expiration_records >> write_expiration_records >> clean_up_expiration_temp_files
 
     clean_up_expiration_temp_files >> [build_call_spreads, build_put_spreads]
 
