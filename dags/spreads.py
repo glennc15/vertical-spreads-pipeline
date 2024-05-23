@@ -5,6 +5,9 @@ from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.providers.postgres.operators.postgres import PostgresOperator
+from operators.read_postgres import ReadPostgresOperator
+
+import os
 
 # import pymongo
 # from pymongo import MongoClient
@@ -54,13 +57,32 @@ def _get_spot_record(**context):
 with DAG(
     dag_id="spreads_builder",
     start_date=airflow.utils.dates.days_ago(1),
-    schedule_interval="@daily"
+    schedule_interval="@daily",
+    template_searchpath="/tmp"
 ) as dag:
 
-    create_expiration_table = PostgresOperator(
-        task_id="create_expiration_table",
+    # create_expiration_table = PostgresOperator(
+    #     task_id="create_expiration_table",
+    #     postgres_conn_id="postgres-spreads",
+    #     sql="sql/expiration_schema.sql"
+    # )
+
+    create_vertical_tables = PostgresOperator(
+        task_id="create_vertical_tables",
         postgres_conn_id="postgres-spreads",
-        sql="sql/expiration_schema.sql"
+        sql="sql/vertical_schemas.sql"
+    )
+
+    # with open("sql/get_latest_timestamp.sql", "r") as f:
+    #     query = f.read()
+    # /opt/airflow/dags/spreads.py]
+
+    print(os.listdir("/opt/airflow"))
+
+    poll_pg_timestamps = ReadPostgresOperator(
+        task_id="poll_pg_timestamps",
+        conn_id="postgres-spreads",
+        sql="sql/get_latest_timestamp.sql"
     )
 
     # build_spot_record = DummyOperator(
@@ -123,7 +145,7 @@ with DAG(
     )
 
 
-    create_expiration_table >> build_spot_record >> write_spot_record >> clean_up_spot_temp_files >> build_expiration_records >> write_expiration_records >> clean_up_expiration_temp_files
+    create_vertical_tables >> poll_pg_timestamps >> build_spot_record >> write_spot_record >> clean_up_spot_temp_files >> build_expiration_records >> write_expiration_records >> clean_up_expiration_temp_files
 
     clean_up_expiration_temp_files >> [build_call_spreads, build_put_spreads]
 
