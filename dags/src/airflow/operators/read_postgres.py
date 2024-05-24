@@ -4,7 +4,7 @@ from airflow.utils.decorators import apply_defaults
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 import os
 
-class ReadPostgresOperator(BaseOperator):
+class ReadPostgres(BaseOperator):
     """
 
     Operator that fetches data from the PostgreSQL database.

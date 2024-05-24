@@ -6,3 +6,5 @@ venv
 logs/
 gh*.txt
 docker*.txt
+tree*.txt
+.DS_Store

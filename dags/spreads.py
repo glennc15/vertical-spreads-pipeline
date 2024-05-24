@@ -5,7 +5,10 @@ from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.providers.postgres.operators.postgres import PostgresOperator
-from operators.read_postgres import ReadPostgresOperator
+from src.airflow.operators.read_postgres_operator import ReadPostgresOperator
+from src.airflow.operators.mongo_spot_record_operator import MongoSpotRecordOperator
+
+
 
 import os
 
@@ -89,10 +92,15 @@ with DAG(
     #     task_id="build_spot_record"
     # )
 
-    build_spot_record = PythonOperator(
-        task_id="build_spot_record",
-        python_callable=_get_spot_record,
-        dag=dag
+    # build_spot_record = PythonOperator(
+    #     task_id="build_spot_record",
+    #     python_callable=_get_spot_record,
+    #     dag=dag
+    # )
+
+    get_spot_record_mongo = MongoSpotRecordOperator(
+        task_id="get_spot_record_mongo",
+        # timestamp="{{task_instance.xcom_pull(task_ids='build_spot_record', key='previous_spot_record')}}"
     )
 
     write_spot_record = DummyOperator(
@@ -145,7 +153,9 @@ with DAG(
     )
 
 
-    create_vertical_tables >> poll_pg_timestamps >> build_spot_record >> write_spot_record >> clean_up_spot_temp_files >> build_expiration_records >> write_expiration_records >> clean_up_expiration_temp_files
+    # create_vertical_tables >> poll_pg_timestamps >> build_spot_record >> write_spot_record >> clean_up_spot_temp_files >> build_expiration_records >> write_expiration_records >> clean_up_expiration_temp_files
+    create_vertical_tables >> poll_pg_timestamps >> get_spot_record_mongo >> write_spot_record >> clean_up_spot_temp_files >> build_expiration_records >> write_expiration_records >> clean_up_expiration_temp_files
+
 
     clean_up_expiration_temp_files >> [build_call_spreads, build_put_spreads]
 
