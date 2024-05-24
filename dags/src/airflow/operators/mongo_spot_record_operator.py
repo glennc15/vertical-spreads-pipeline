@@ -14,17 +14,19 @@ class MongoSpotRecordOperator(BaseOperator):
     @apply_defaults
     def __init__(
         self,
-        # timestamp,
+        conn_id,
         **kwargs
     ):
         super(MongoSpotRecordOperator, self).__init__(**kwargs)
+
+        self._conn_id = conn_id
 
 
 
     def execute(self, context):
 
 
-        hook = MongoHook(mongo_conn_id="mongo-lake")
+        hook = MongoHook(mongo_conn_id=self._conn_id)
         mongo_client = hook.get_conn()
 
 
