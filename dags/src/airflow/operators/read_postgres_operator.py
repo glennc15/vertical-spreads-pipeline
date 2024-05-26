@@ -31,7 +31,10 @@ class ReadPostgresOperator(BaseOperator):
     def execute(self, context):
 
         # load the query from the .sql file:
-        sql_files_path = os.path.join("/opt/airflow/dags", self._sql)
+        if os.path.isabs(self._sql):
+            sql_files_path = self._sql
+        else:
+            sql_files_path = os.path.join("/opt/airflow/dags", self._sql)
 
         with open(sql_files_path, "r") as f:
             query_str = f.read()

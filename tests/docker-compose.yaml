@@ -1,0 +1,35 @@
+services:
+  # mongo-lake:
+  #   image: mongo
+  #   container_name: mongo-lake
+  #   volumes:
+  #     - /Users/glenn/Documents/ProgrammingStuff/spreads/mongo-data:/data/db
+  #   ports:
+  #     - 27017:27017
+  test-mongo-lake:
+    image: mongo
+    container_name: test-mongo-lake
+    volumes:
+      - /Users/glenn/Documents/ProgrammingStuff/spreads/test-mongo-data:/data/db
+    ports:
+      - 27015:27017
+  postgres-spreads:
+    image: postgres:13
+    container_name: test-postgres-spreads
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=Vertical
+    ports:
+      - 5432:5432
+    volumes:
+      - /Users/glenn/Documents/ProgrammingStuff/spreads/test-postgres-data:/var/lib/postgresql/data:rw
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    volumes:
+      - /Users/glenn/Documents/ProgrammingStuff/spreads/test-pgadmin:/var/lib/pgadmin
+    ports:
+      - 8080:80

@@ -25,10 +25,8 @@ class MongoSpotRecordOperator(BaseOperator):
 
     def execute(self, context):
 
-
         hook = MongoHook(mongo_conn_id=self._conn_id)
         mongo_client = hook.get_conn()
-
 
         timestamp = context["task_instance"].xcom_pull(
             task_ids="poll_pg_timestamps",
