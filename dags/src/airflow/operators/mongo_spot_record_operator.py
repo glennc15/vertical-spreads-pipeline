@@ -28,10 +28,10 @@ class MongoSpotRecordOperator(BaseOperator):
         hook = MongoHook(mongo_conn_id=self._conn_id)
         mongo_client = hook.get_conn()
 
-        timestamp = context["task_instance"].xcom_pull(
-            task_ids="poll_pg_timestamps",
-            key="previous_spot_record"
-        )
+        # timestamp = context["task_instance"].xcom_pull(
+        #     task_ids="poll_pg_timestamps",
+        #     key="previous_spot_record"
+        # )
 
         timestamp = datetime.datetime(2020, 8, 13, 13, 55)
 
@@ -48,7 +48,7 @@ class MongoSpotRecordOperator(BaseOperator):
             sort=[("timestamp", 1)],
             limit=1
         )
-
+        print("******** Mongo Query *************")
         print(list(query_cursor))
 
 

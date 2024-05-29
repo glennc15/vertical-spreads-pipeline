@@ -12,7 +12,7 @@ services:
     volumes:
       - /Users/glenn/Documents/ProgrammingStuff/spreads/test-mongo-data:/data/db
     ports:
-      - 27015:27017
+      - 27017:27017
   postgres-spreads:
     image: postgres:13
     container_name: test-postgres-spreads

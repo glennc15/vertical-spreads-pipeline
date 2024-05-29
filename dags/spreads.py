@@ -100,6 +100,7 @@ with DAG(
 
     get_spot_record_mongo = MongoSpotRecordOperator(
         task_id="get_spot_record_mongo",
+        conn_id="mongo-lake"
         # timestamp="{{task_instance.xcom_pull(task_ids='build_spot_record', key='previous_spot_record')}}"
     )
 
