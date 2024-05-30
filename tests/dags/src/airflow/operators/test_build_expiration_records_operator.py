@@ -18,7 +18,7 @@ def run_build_expiration_records_operator(mocked_mongo_hook, mocked_postgres_hoo
 
     pg_hook.run(sql)
 
-    postgres_sql_query = os.path.join(sql_files_path, "get_latest_timestamp.sql")
+    postgres_sql_query = os.path.join(sql_files_path, "get_latest_spot_record.sql")
 
     task = BuildExpirationRecordsOperator(
         task_id="test",
@@ -32,8 +32,10 @@ def run_build_expiration_records_operator(mocked_mongo_hook, mocked_postgres_hoo
     # get the latest expiration records:
     conn = pg_hook.get_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM spots ORDER BY spot_timestamp DESC LIMIT 1;")
+    cursor.execute("SELECT * FROM spots INNER JOIN expirations ON spots.id = expirations.spot_id ORDER BY expirations.expiration;")
     test_records = cursor.fetchall()
+
+    return test_records
 
 
 def test_build_expiration_records_operator_correct_number_of_expiration_records_created(mocked_mongo_hook, mocked_postgres_hook):

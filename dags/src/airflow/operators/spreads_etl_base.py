@@ -1,6 +1,7 @@
+import pytz
+import datetime
+
 from airflow.models import BaseOperator
-
-
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.mongo.hooks.mongo import MongoHook
 
@@ -154,6 +155,34 @@ class SpreadsEtlBase(BaseOperator):
         return uuid7()
 
 
+    # def central_tz(self, timestamp):
+    #     '''
+
+    #     converts from utc time to cental time.
+    #     All the timestamps in mongo are utc.
+
+    #     '''
+
+    #     if timestamp.tzinfo == None:
+    #         timestamp = pytz.timezone("UTC").localize(timestamp)
+    #         return timestamp.astimezone(pytz.timezone("US/Central"))
+
+
+    #     if timestamp.tzinfo == datetime.timezone.utc:
+    #         return timestamp.astimezone(pytz.timezone("US/Central"))
+
+
+    # def fix_expiration(self, expiration):
+    #     '''
+    #     The expiraitons in mongo were set to midnight on the day of expiration.
+    #     Need to set them to 16:00 in the Central timezone.
+
+    #     '''
+
+    #     central_expiration = self.central_tz(timestamp=expiration)
+
+
+    #     return central_expiration.replace(hour=16, minute=0).astimezone(pytz.timezone("UTC"))
 
 
 

@@ -30,9 +30,11 @@ def mocked_mongo_hook(mocker):
         port=27017
     )
 
-    with mocker.patch.object(MongoHook, "get_connection", return_value=connection) as hook:
-        yield hook
-
+    return mocker.patch.object(
+        MongoHook,
+        "get_connection",
+        return_value=connection
+    )
 
 @pytest.fixture()
 def mocked_postgres_hook(mocker):
@@ -46,6 +48,9 @@ def mocked_postgres_hook(mocker):
         port=5432
     )
 
-    with mocker.patch.object(PostgresHook, "get_connection", return_value=connection) as hook:
-        yield hook
+    return mocker.patch.object(
+        PostgresHook,
+        "get_connection",
+        return_value=connection
+    )
 

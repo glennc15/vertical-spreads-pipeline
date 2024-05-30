@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS spots (
 -- create expirations table
 CREATE TABLE IF NOT EXISTS expirations (
     id uuid PRIMARY KEY,
-    spot_timestamp timestamp WITH TIME ZONE NOT NULL,
     expiration timestamp WITH TIME ZONE NOT NULL,
     time_to_expiration integer,
     past_expiration boolean DEFAULT false,
