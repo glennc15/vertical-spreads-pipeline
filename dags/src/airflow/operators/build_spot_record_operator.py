@@ -13,7 +13,7 @@ from .spreads_etl_base import SpreadsEtlBase
 
 
 
-class BuildSpotRecordOperator(BaseOpSpreadsEtlBaseerator):
+class BuildSpotRecordOperator(SpreadsEtlBase):
     # template_fields = ("_start_date", "_end_date", "_insert_query")
 
     def __init__(
@@ -60,7 +60,17 @@ class BuildSpotRecordOperator(BaseOpSpreadsEtlBaseerator):
             mongo_conn_id=self._mongo_conn_id
         )
 
-        postgres_records = self.get_postgres_spot_record()
+        # postgres_records = self.get_postgres_spot_record()
+        # get the spot records from postgres using the sql file:
+        with open(self._sql_path, "r") as f:
+            sql_str = f.read()
+
+        postgres_records = self.fetch_postgres_records(
+            query=sql_str,
+            expected_records=1,
+            allow_zero=True
+        )
+
 
         if len(postgres_records) == 0:
             # no records exist in postgres so get the first spot record in mongo
