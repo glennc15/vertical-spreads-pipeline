@@ -1,50 +1,74 @@
 
 import os
 import datetime
-import pytz
 
 from airflow.models.connection import Connection
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.mongo.hooks.mongo import MongoHook
 
-
-# from pytest_docker_tools import fetch, container
-# from pytest_mock import mocker
+import pytest
+from pytest_mock import mocker
 
 from dags.src.airflow.operators.build_spot_record_operator import BuildSpotRecordOperator
 from dags.src.airflow.operators.mongo_spot_record_operator import MongoSpotRecordOperator
 
 sql_files_path = '/Users/glenn/Documents/DataEngineering/vertical-spreads-pipeline/dags/sql'
 
+@pytest.fixture()
+def mocked_mongo_hook(mocker):
+    connection = Connection(
+        conn_id="mongo-lake",
+        conn_type="mongodb",
+        host="localhost",
+        port=27017
+    )
+
+    with mocker.patch.object(MongoHook, "get_connection", return_value=connection) as hook:
+        yield hook
 
 
+@pytest.fixture()
+def mocked_postgres_hook(mocker):
+    connection = Connection(
+        conn_id="postgres",
+        conn_type="postgres",
+        host="localhost",
+        login="root",
+        password="root",
+        schema="Vertical",
+        port=5432
+    )
 
-def test_build_spot_record_empty_postgres_db_timestamp(mocker):
+    with mocker.patch.object(PostgresHook, "get_connection", return_value=connection) as hook:
+        yield hook
+
+
+def test_build_spot_record_empty_postgres_db_timestamp(mocker, mocked_mongo_hook, mocked_postgres_hook):
     # patch the mongo/postgres connections:
-    mocker.patch.object(
-        MongoHook,
-        "get_connection",
-        return_value=Connection(
-            conn_id="mongo-lake",
-            conn_type="mongodb",
-            host="localhost",
-            port=27017
-        )
-    )
+    # mocker.patch.object(
+    #     MongoHook,
+    #     "get_connection",
+    #     return_value=Connection(
+    #         conn_id="mongo-lake",
+    #         conn_type="mongodb",
+    #         host="localhost",
+    #         port=27017
+    #     )
+    # )
 
-    mocker.patch.object(
-        PostgresHook,
-        "get_connection",
-        return_value=Connection(
-            conn_id="postgres",
-            conn_type="postgres",
-            host="localhost",
-            login="root",
-            password="root",
-            schema="Vertical",
-            port=5432
-        )
-    )
+    # mocker.patch.object(
+    #     PostgresHook,
+    #     "get_connection",
+    #     return_value=Connection(
+    #         conn_id="postgres",
+    #         conn_type="postgres",
+    #         host="localhost",
+    #         login="root",
+    #         password="root",
+    #         schema="Vertical",
+    #         port=5432
+    #     )
+    # )
 
     # initialize postgres with no spot records:
     pg_hook = PostgresHook()
@@ -80,32 +104,32 @@ def test_build_spot_record_empty_postgres_db_timestamp(mocker):
     assert test_timestamp == expected_timestamp
 
 
-def test_build_spot_record_empty_postgres_db_spot(mocker):
-    # patch the mongo/postgres connections:
-    mocker.patch.object(
-        MongoHook,
-        "get_connection",
-        return_value=Connection(
-            conn_id="mongo-lake",
-            conn_type="mongodb",
-            host="localhost",
-            port=27017
-        )
-    )
+def test_build_spot_record_empty_postgres_db_spot(mocker, mocked_mongo_hook, mocked_postgres_hook):
+#     # patch the mongo/postgres connections:
+#     mocker.patch.object(
+#         MongoHook,
+#         "get_connection",
+#         return_value=Connection(
+#             conn_id="mongo-lake",
+#             conn_type="mongodb",
+#             host="localhost",
+#             port=27017
+#         )
+#     )
 
-    mocker.patch.object(
-        PostgresHook,
-        "get_connection",
-        return_value=Connection(
-            conn_id="postgres",
-            conn_type="postgres",
-            host="localhost",
-            login="root",
-            password="root",
-            schema="Vertical",
-            port=5432
-        )
-    )
+#     mocker.patch.object(
+#         PostgresHook,
+#         "get_connection",
+#         return_value=Connection(
+#             conn_id="postgres",
+#             conn_type="postgres",
+#             host="localhost",
+#             login="root",
+#             password="root",
+#             schema="Vertical",
+#             port=5432
+#         )
+#     )
 
     # initialize postgres with no spot records:
     pg_hook = PostgresHook()
@@ -142,32 +166,32 @@ def test_build_spot_record_empty_postgres_db_spot(mocker):
 
 
 
-def test_build_spot_record_one_previous_record_timestamp(mocker):
-    # patch the mongo/postgres connections:
-    mocker.patch.object(
-        MongoHook,
-        "get_connection",
-        return_value=Connection(
-            conn_id="mongo-lake",
-            conn_type="mongodb",
-            host="localhost",
-            port=27017
-        )
-    )
+def test_build_spot_record_one_previous_record_timestamp(mocker, mocked_mongo_hook, mocked_postgres_hook):
+    # # patch the mongo/postgres connections:
+    # mocker.patch.object(
+    #     MongoHook,
+    #     "get_connection",
+    #     return_value=Connection(
+    #         conn_id="mongo-lake",
+    #         conn_type="mongodb",
+    #         host="localhost",
+    #         port=27017
+    #     )
+    # )
 
-    mocker.patch.object(
-        PostgresHook,
-        "get_connection",
-        return_value=Connection(
-            conn_id="postgres",
-            conn_type="postgres",
-            host="localhost",
-            login="root",
-            password="root",
-            schema="Vertical",
-            port=5432
-        )
-    )
+    # mocker.patch.object(
+    #     PostgresHook,
+    #     "get_connection",
+    #     return_value=Connection(
+    #         conn_id="postgres",
+    #         conn_type="postgres",
+    #         host="localhost",
+    #         login="root",
+    #         password="root",
+    #         schema="Vertical",
+    #         port=5432
+    #     )
+    # )
 
 
     # initialize postgres with no spot records:
@@ -203,32 +227,32 @@ def test_build_spot_record_one_previous_record_timestamp(mocker):
 
 
 
-def test_build_spot_record_one_previous_record_spot(mocker):
-    # patch the mongo/postgres connections:
-    mocker.patch.object(
-        MongoHook,
-        "get_connection",
-        return_value=Connection(
-            conn_id="mongo-lake",
-            conn_type="mongodb",
-            host="localhost",
-            port=27017
-        )
-    )
+def test_build_spot_record_one_previous_record_spot(mocker, mocked_mongo_hook, mocked_postgres_hook):
+    # # patch the mongo/postgres connections:
+    # mocker.patch.object(
+    #     MongoHook,
+    #     "get_connection",
+    #     return_value=Connection(
+    #         conn_id="mongo-lake",
+    #         conn_type="mongodb",
+    #         host="localhost",
+    #         port=27017
+    #     )
+    # )
 
-    mocker.patch.object(
-        PostgresHook,
-        "get_connection",
-        return_value=Connection(
-            conn_id="postgres",
-            conn_type="postgres",
-            host="localhost",
-            login="root",
-            password="root",
-            schema="Vertical",
-            port=5432
-        )
-    )
+    # mocker.patch.object(
+    #     PostgresHook,
+    #     "get_connection",
+    #     return_value=Connection(
+    #         conn_id="postgres",
+    #         conn_type="postgres",
+    #         host="localhost",
+    #         login="root",
+    #         password="root",
+    #         schema="Vertical",
+    #         port=5432
+    #     )
+    # )
 
 
     # initialize postgres with no spot records:
