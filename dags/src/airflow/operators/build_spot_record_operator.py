@@ -13,7 +13,7 @@ from .spreads_etl_base import SpreadsEtlBase
 
 
 
-class BuildSpotRecordOperator(BaseOperator):
+class BuildSpotRecordOperator(BaseOpSpreadsEtlBaseerator):
     # template_fields = ("_start_date", "_end_date", "_insert_query")
 
     def __init__(
@@ -24,13 +24,19 @@ class BuildSpotRecordOperator(BaseOperator):
         **kwargs
     ):
 
-        super().__init__(**kwargs)
-        self._postgres_conn_id = postgres_conn_id
-        self._mongo_conn_id = mongo_conn_id
-        self._sql_path = sql_path
+        super().__init__(
+            postgres_conn_id=postgres_conn_id,
+            mongo_conn_id=mongo_conn_id,
+            sql_path=sql_path,
+            **kwargs
+        )
 
-        self._pg_hook = None
-        self._mongo_hook = None
+        # self._postgres_conn_id = postgres_conn_id
+        # self._mongo_conn_id = mongo_conn_id
+        # self._sql_path = sql_path
+
+        # self._pg_hook = None
+        # self._mongo_hook = None
 
     def execute(self, context):
         '''
