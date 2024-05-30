@@ -61,17 +61,20 @@ class BuildSpotRecordOperator(SpreadsEtlBase):
         )
 
         # postgres_records = self.get_postgres_spot_record()
-        # get the spot records from postgres using the sql file:
+
+        # get the most currect spot record from postgres:
         with open(self._sql_path, "r") as f:
-            sql_str = f.read()
+            # sql_str = f.read()
 
-        postgres_records = self.fetch_postgres_records(
-            query=sql_str,
-            expected_records=1,
-            allow_zero=True
-        )
+            postgres_records = self.fetch_postgres_records(
+                query=f.read(),
+                expected_records=1,
+                allow_zero=True
+            )
 
-
+        # Build the mongo query. If there are no postgres spot records
+        # then get the first spot record in mongo. If a postgres spot record
+        # then get the next spot record from mongo.
         if len(postgres_records) == 0:
             # no records exist in postgres so get the first spot record in mongo
             mongo_query = {
@@ -84,19 +87,46 @@ class BuildSpotRecordOperator(SpreadsEtlBase):
                 "timestamp": {"$gt": postgres_records[0][0]}
             }
 
-        mongo_records = self.get_mongo_spot_record(query=mongo_query)
+        # print(f"mongo_query = {mongo_query}")
 
-
-        mongo_records = self.add_timezone(
-            mongo_records=mongo_records,
-            base_tz=pytz.timezone("UTC"),
-            final_tz=pytz.timezone('US/Central')
+        mongo_records = self.get_mongo_records(
+            db="OptionData",
+            collection="SPY_Spots",
+            query=mongo_query,
+            sort=[("timestamp", 1)],
+            limit=1,
+            expected_records=1
         )
 
-        self.write_postgres_spot_record(
-            mongo_record=mongo_records[0]
+
+        # mongo_records = self.get_mongo_spot_record(query=mongo_query)
+
+        print(mongo_records)
+
+
+        # mongo_records = self.add_timezone(
+        #     mongo_records=mongo_records,
+        #     base_tz=pytz.timezone("UTC"),
+        #     final_tz=pytz.timezone('US/Central')
+        # )
+
+        # self.write_postgres_spot_record(
+        #     mongo_record=mongo_records[0]
+        # )
+
+        # build sql insert statement and add the new spot record to postgres
+        mongo_record = mongo_records[0]
+        spot_tuple = (
+            self.get_uuid7(),
+            mongo_record['timestamp'].isoformat(),
+            mongo_record['spot']
         )
 
+        sql_str = f"INSERT INTO spots (id, spot_timestamp, spot) VALUES {spot_tuple};"
+
+        self.write_postgres_records(
+            query=sql_str
+        )
 
 
     def add_timezone(self, mongo_records, base_tz, final_tz):

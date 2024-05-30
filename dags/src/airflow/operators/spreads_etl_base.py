@@ -82,19 +82,20 @@ class SpreadsEtlBase(BaseOperator):
         mongo_client = self._mongo_hook.get_conn()
 
         query_results = mongo_client[db][collection].find(
-            query=query,
+            filter=query,
             sort=sort,
             limit=limit
         )
 
-        query_results = list(query_results)
+        mongo_records = list(query_results)
 
-        if expected_records and len(query_results) != expected_records:
+        if expected_records and len(mongo_records) != expected_records:
             err_msg = f"expected query results to = {expected_records}"
-            err_msg += f"instead query: {query} returned {len(query_results)} records."
+            err_msg += f"instead query: {query} returned {len(mongo_records)} records."
             raise ValueError(err_msg)
 
-        return query_results
+        return mongo_records
+
 
     def fetch_postgres_records(self, query, expected_records=None, allow_zero=False):
         '''
