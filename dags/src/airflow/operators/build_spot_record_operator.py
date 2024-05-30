@@ -8,6 +8,8 @@ from airflow.models import BaseOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.mongo.hooks.mongo import MongoHook
 
+from .spreads_etl_base import SpreadsEtlBase
+
 
 
 

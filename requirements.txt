@@ -3,3 +3,4 @@ apache-airflow-providers-postgres
 pytest
 pytest-mock
 pytest-docker-compose
+uuid7
