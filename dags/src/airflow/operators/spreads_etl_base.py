@@ -130,6 +130,7 @@ class SpreadsEtlBase(BaseOperator):
 
         return query_results
 
+
     def write_postgres_records(self, query):
         '''
         Writes records to the postgres database:
@@ -142,10 +143,11 @@ class SpreadsEtlBase(BaseOperator):
 
         # TODO: add some error handling
 
+
     def get_uuid7(self):
         """
 
-        returns a uuid7
+        helper class for postgres id fields. Returns a uuid7
 
         """
 
