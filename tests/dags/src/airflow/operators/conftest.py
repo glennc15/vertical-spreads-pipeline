@@ -1,6 +1,13 @@
 import datetime
 
+from airflow.models.connection import Connection
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.providers.mongo.hooks.mongo import MongoHook
+
 import pytest
+from pytest_mock import mocker
+
+
 from airflow.models import DAG, BaseOperator
 
 @pytest.fixture
@@ -13,3 +20,32 @@ def test_dag():
         },
         schedule="@daily"
     )
+
+@pytest.fixture()
+def mocked_mongo_hook(mocker):
+    connection = Connection(
+        conn_id="mongo-lake",
+        conn_type="mongodb",
+        host="localhost",
+        port=27017
+    )
+
+    with mocker.patch.object(MongoHook, "get_connection", return_value=connection) as hook:
+        yield hook
+
+
+@pytest.fixture()
+def mocked_postgres_hook(mocker):
+    connection = Connection(
+        conn_id="postgres",
+        conn_type="postgres",
+        host="localhost",
+        login="root",
+        password="root",
+        schema="Vertical",
+        port=5432
+    )
+
+    with mocker.patch.object(PostgresHook, "get_connection", return_value=connection) as hook:
+        yield hook
+
