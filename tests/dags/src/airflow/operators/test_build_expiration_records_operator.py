@@ -44,7 +44,7 @@ def test_build_expiration_records_operator_correct_number_of_expiration_records_
     )
 
     # test the correct number of expiration records were generated:
-    expected_records = 10
+    expected_records = 34
     assert len(test_records) == expected_records
 
 
@@ -60,6 +60,7 @@ def test_build_expiration_records_operator_first_expiration_record_timestamp(moc
     test_timestamp = test_records[0][1]
     assert test_timestamp == expected_timestamp
 
+
 def test_build_expiration_records_operator_first_expiration_record_expiration(mocked_mongo_hook, mocked_postgres_hook):
 
     test_records = run_build_expiration_records_operator(
@@ -68,7 +69,7 @@ def test_build_expiration_records_operator_first_expiration_record_expiration(mo
     )
 
     # test expiration:
-    expected_expiration = datetime.datetime.fromisoformat("2020-09-10T15:45:00.000+00:00")
+    expected_expiration = datetime.datetime.fromisoformat("2020-09-12T03:59:00+00:00")
     test_expiration = test_records[0][1]
     assert test_expiration == expected_expiration
 
@@ -80,8 +81,7 @@ def test_build_expiration_records_operator_first_expiration_record_time_to_expir
         mocked_postgres_hook
     )
 
-    # test timestamp:
-    expected_time_to_expiration = 100000
+    expected_time_to_expiration = 130440.0
     test_time_to_expiration = test_records[0][1]
     assert test_time_to_expiration == expected_time_to_expiration
 
@@ -93,8 +93,7 @@ def test_build_expiration_records_operator_first_expiration_record_past_expirati
         mocked_postgres_hook
     )
 
-    # test timestamp:
-    expected_past_expiration = 100000
+    expected_past_expiration = True
     test_past_expiration = test_records[0][1]
     assert test_past_expiration == expected_past_expiration
 
@@ -108,7 +107,6 @@ def test_build_expiration_records_operator_last_expiration_record_timestamp(mock
         mocked_postgres_hook
     )
 
-    # test timestamp:
     expected_timestamp = datetime.datetime.fromisoformat("2020-09-10T15:45:00.000+00:00")
     test_timestamp = test_records[-1][1]
     assert test_timestamp == expected_timestamp
@@ -120,8 +118,7 @@ def test_build_expiration_records_operator_last_expiration_record_expiration(moc
         mocked_postgres_hook
     )
 
-    # test expiration:
-    expected_expiration = datetime.datetime.fromisoformat("2020-09-10T15:45:00.000+00:00")
+    expected_expiration = datetime.datetime.fromisoformat("2022-12-17T04:59:00+00:00")
     test_expiration = test_records[-1][1]
     assert test_expiration == expected_expiration
 
@@ -133,8 +130,7 @@ def test_build_expiration_records_operator_last_expiration_record_time_to_expira
         mocked_postgres_hook
     )
 
-    # test timestamp:
-    expected_time_to_expiration = 100000
+    expected_time_to_expiration = 71500440.0
     test_time_to_expiration = test_records[-1][1]
     assert test_time_to_expiration == expected_time_to_expiration
 
@@ -146,7 +142,6 @@ def test_build_expiration_records_operator_last_expiration_record_past_expiratio
         mocked_postgres_hook
     )
 
-    # test timestamp:
-    expected_past_expiration = False
+    expected_past_expiration = True
     test_past_expiration = test_records[-1][1]
     assert test_past_expiration == expected_past_expiration
