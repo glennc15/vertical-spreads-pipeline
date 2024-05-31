@@ -30,9 +30,18 @@ def run_build_expiration_records_operator(mocked_mongo_hook, mocked_postgres_hoo
     task.execute(context={})
 
     # get the latest expiration records:
+    sql_str = '''
+        SELECT *
+        FROM spots
+        INNER JOIN expirations
+        ON expirations.spot_id = (SELECT id FROM spots ORDER BY spot_timestamp DESC LIMIT 1)
+        ORDER BY expirations.expiration ASC;'''
+
     conn = pg_hook.get_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM spots INNER JOIN expirations ON spots.id = expirations.spot_id ORDER BY expirations.expiration;")
+    # cursor.execute("SELECT * FROM spots INNER JOIN expirations ON spots.id = expirations.spot_id ORDER BY expirations.expiration;")
+    cursor.execute(sql_str)
+
     test_records = cursor.fetchall()
 
     return test_records
