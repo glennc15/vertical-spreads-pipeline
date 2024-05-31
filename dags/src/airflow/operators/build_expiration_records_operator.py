@@ -48,6 +48,8 @@ class BuildExpirationRecordsOperator(SpreadsEtlBase):
         spot_id = postgres_records[0][0]
         spot_timestamp = postgres_records[0][1]
 
+        # mongo aggregate filter for expirations for
+        # options that match the spot timestamp:
         filter = [
             {
                 "$match": {
@@ -72,9 +74,11 @@ class BuildExpirationRecordsOperator(SpreadsEtlBase):
             }
         ]
 
-        mongo_client = self._mongo_hook.get_conn()
-        query_results = mongo_client["OptionData"]["SPY_Options"].aggregate(filter)
-        expirations = list(query_results)
+        expirations = self.aggregate_mongo_records(
+            db="OptionData",
+            collection="SPY_Options",
+            query=filter
+        )
 
 
         # build expiration records
@@ -98,15 +102,13 @@ class BuildExpirationRecordsOperator(SpreadsEtlBase):
         '''
         utc_tz = pytz.timezone("UTC")
         central_tz = pytz.timezone("US/Central")
-        # today = utc_tz.localize(datetime.datetime.now())
-        # today = datetime.datetime.utcnow()
         today = datetime.datetime.now(datetime.UTC)
 
 
         for record in expirations:
             record['expiration'] = utc_tz.localize(record['expiration']).astimezone(central_tz).replace(hour=16, minute=0).astimezone(utc_tz)
             record['time_to_expiration'] = (record['expiration']-spot_timestamp).total_seconds()
-            record['past_expiration'] = today.date() < record['expiration'].date()
+            record['past_expiration'] = today.date() > record['expiration'].date()
 
         # build expiration tuples and add the new expiration records to postgres:
 

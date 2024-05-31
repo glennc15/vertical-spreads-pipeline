@@ -1,6 +1,3 @@
-import pytz
-import datetime
-
 from airflow.models import BaseOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.mongo.hooks.mongo import MongoHook
@@ -61,7 +58,7 @@ class SpreadsEtlBase(BaseOperator):
         pass
 
 
-    def get_mongo_records(self, db, collection, query, sort, limit, expected_records=None):
+    def get_mongo_records(self, db, collection, query, sort, limit, expected_records=None, use_find=True, use_aggregate=False):
         '''
 
         Run a query against the mongo database:
@@ -81,7 +78,6 @@ class SpreadsEtlBase(BaseOperator):
 
         '''
         mongo_client = self._mongo_hook.get_conn()
-
         query_results = mongo_client[db][collection].find(
             filter=query,
             sort=sort,
@@ -96,6 +92,17 @@ class SpreadsEtlBase(BaseOperator):
             raise ValueError(err_msg)
 
         return mongo_records
+
+    def aggregate_mongo_records(self, db, collection, query):
+        '''
+
+
+        '''
+        mongo_client = self._mongo_hook.get_conn()
+        query_results = mongo_client[db][collection].aggregate(query)
+
+
+        return list(query_results)
 
 
     def fetch_postgres_records(self, query, expected_records=None, allow_zero=False):
@@ -153,36 +160,5 @@ class SpreadsEtlBase(BaseOperator):
         """
 
         return uuid7()
-
-
-    # def central_tz(self, timestamp):
-    #     '''
-
-    #     converts from utc time to cental time.
-    #     All the timestamps in mongo are utc.
-
-    #     '''
-
-    #     if timestamp.tzinfo == None:
-    #         timestamp = pytz.timezone("UTC").localize(timestamp)
-    #         return timestamp.astimezone(pytz.timezone("US/Central"))
-
-
-    #     if timestamp.tzinfo == datetime.timezone.utc:
-    #         return timestamp.astimezone(pytz.timezone("US/Central"))
-
-
-    # def fix_expiration(self, expiration):
-    #     '''
-    #     The expiraitons in mongo were set to midnight on the day of expiration.
-    #     Need to set them to 16:00 in the Central timezone.
-
-    #     '''
-
-    #     central_expiration = self.central_tz(timestamp=expiration)
-
-
-    #     return central_expiration.replace(hour=16, minute=0).astimezone(pytz.timezone("UTC"))
-
 
 
