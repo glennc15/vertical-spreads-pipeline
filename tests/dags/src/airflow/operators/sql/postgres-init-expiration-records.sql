@@ -1,6 +1,10 @@
 DROP TABLE IF EXISTS verticals;
 DROP TABLE IF EXISTS expirations;
 DROP TABLE IF EXISTS spots;
+DROP TABLE IF EXISTS bull_calls;
+DROP TABLE IF EXISTS bull_puts;
+DROP TABLE IF EXISTS bear_calls;
+DROP TABLE IF EXISTS bear_puts;
 
 
 CREATE TABLE IF NOT EXISTS spots (
@@ -20,13 +24,95 @@ CREATE TABLE IF NOT EXISTS expirations (
     FOREIGN KEY (spot_id) REFERENCES spots(id)
 );
 
-CREATE TABLE IF NOT EXISTS verticals (
+CREATE TABLE IF NOT EXISTS bull_calls (
     id uuid PRIMARY KEY,
-
-
-    expiration_id uuid,
-    FOREIGN KEY (expiration_id) REFERENCES expirations (id)
+    short_description char(20),
+    long_description char(20),
+    expiration timestamp WITH TIME ZONE,
+    spot_timestamp timestamp WITH TIME ZONE,
+    spot decimal,
+    short_strike decimal,
+    long_strike decimal,
+    strike_delta decimal,
+    max_profit decimal,
+    risk decimal,
+    break_even decimal,
+    delta decimal,
+    long_iv decimal,
+    short_iv decimal,
+    expiration_close decimal,
+    profit decimal,
+    time_to_expiration integer,
+    past_expiration boolean DEFAULT false
 );
+
+CREATE TABLE IF NOT EXISTS bear_calls (
+    id uuid PRIMARY KEY,
+    short_description char(20),
+    long_description char(20),
+    expiration timestamp WITH TIME ZONE,
+    spot_timestamp timestamp WITH TIME ZONE,
+    spot decimal,
+    short_strike decimal,
+    long_strike decimal,
+    strike_delta decimal,
+    max_profit decimal,
+    risk decimal,
+    break_even decimal,
+    delta decimal,
+    long_iv decimal,
+    short_iv decimal,
+    expiration_close decimal,
+    profit decimal,
+    time_to_expiration integer,
+    past_expiration boolean DEFAULT false
+);
+
+CREATE TABLE IF NOT EXISTS bull_puts (
+    id uuid PRIMARY KEY,
+    short_description char(20),
+    long_description char(20),
+    expiration timestamp WITH TIME ZONE,
+    spot_timestamp timestamp WITH TIME ZONE,
+    spot decimal,
+    short_strike decimal,
+    long_strike decimal,
+    strike_delta decimal,
+    max_profit decimal,
+    risk decimal,
+    break_even decimal,
+    delta decimal,
+    long_iv decimal,
+    short_iv decimal,
+    expiration_close decimal,
+    profit decimal,
+    time_to_expiration integer,
+    past_expiration boolean DEFAULT false
+);
+
+CREATE TABLE IF NOT EXISTS bear_puts (
+    id uuid PRIMARY KEY,
+    short_description char(20),
+    long_description char(20),
+    expiration timestamp WITH TIME ZONE,
+    spot_timestamp timestamp WITH TIME ZONE,
+    spot decimal,
+    short_strike decimal,
+    long_strike decimal,
+    strike_delta decimal,
+    max_profit decimal,
+    risk decimal,
+    break_even decimal,
+    delta decimal,
+    long_iv decimal,
+    short_iv decimal,
+    expiration_close decimal,
+    profit decimal,
+    time_to_expiration integer,
+    past_expiration boolean DEFAULT false
+);
+
+
 
 -- create one record:
 INSERT INTO spots (id, spot_timestamp, spot) VALUES (UUID('06659cd9-d33c-7654-8000-64b5a28c6d31'), '2020-09-10T15:45:00', 340.77

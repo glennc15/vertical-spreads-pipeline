@@ -3,7 +3,7 @@ import datetime
 
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-from dags.src.airflow.operators.build_call_spreads_operator import BuildCallSpreadsOperator
+from dags.src.airflow.operators.build_bull_call_spreads_operator import BuildBullCallSpreadsOperator
 
 sql_files_path = '/Users/glenn/Documents/DataEngineering/vertical-spreads-pipeline/dags/sql'
 
@@ -20,7 +20,7 @@ def run_build_call_spreads_operator(mocked_mongo_hook, mocked_postgres_hook):
 
     postgres_sql_query = os.path.join(sql_files_path, "get_latest_spot_record.sql")
 
-    task = BuildCallSpreadsOperator(
+    task = BuildBullCallSpreadsOperator(
         task_id="test",
         postgres_conn_id="test_postgres",
         mongo_conn_id="test_mongo",
@@ -37,7 +37,7 @@ def run_build_call_spreads_operator(mocked_mongo_hook, mocked_postgres_hook):
     #     ON expirations.spot_id = (SELECT id FROM spots ORDER BY spot_timestamp DESC LIMIT 1)
     #     ORDER BY expirations.expiration ASC;'''
 
-    sql_str = "SELECT * FROM verticals;"
+    sql_str = "SELECT * FROM bull_calls;"
 
     conn = pg_hook.get_conn()
     cursor = conn.cursor()

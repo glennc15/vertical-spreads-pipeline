@@ -7,7 +7,7 @@ from airflow.providers.mongo.hooks.mongo import MongoHook
 from .spreads_etl_base import SpreadsEtlBase
 
 
-class BuildCallSpreadsOperator(SpreadsEtlBase):
+class BuildBullCallSpreadsOperator(SpreadsEtlBase):
 
     def __init__(
         self,
