@@ -11,7 +11,7 @@ def run_build_call_spreads_operator(mocked_mongo_hook, mocked_postgres_hook):
         # initialize postgres with one spot records:
     pg_hook = PostgresHook()
 
-    init_file = os.path.join(os.path.dirname(__file__), "sql", "postgres_one_record.sql")
+    init_file = os.path.join(os.path.dirname(__file__), "sql", "postgres-init-expiration-records.sql")
 
     with open(init_file, "r") as f:
         sql = f.read()
@@ -51,3 +51,6 @@ def test_build_call_spreads_operator_correct_number_of_spread_records_created(mo
         mocked_mongo_hook=mocked_mongo_hook,
         mocked_postgres_hook=mocked_postgres_hook
     )
+
+    expected_records = 300
+    assert len(test_records) == expected_records

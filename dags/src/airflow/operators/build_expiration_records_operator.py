@@ -130,6 +130,11 @@ class BuildExpirationRecordsOperator(SpreadsEtlBase):
         sql_str = sql_str[0:-2] + ";"
 
 
+        # # only for testing - write the expiration records to a file:
+        # with open("expirations.sql", "w") as f:
+        #     f.write(sql_str)
+
+
         self.write_postgres_records(
             query=sql_str
         )

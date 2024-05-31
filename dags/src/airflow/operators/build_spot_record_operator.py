@@ -84,6 +84,10 @@ class BuildSpotRecordOperator(SpreadsEtlBase):
 
         sql_str = f"INSERT INTO spots (id, spot_timestamp, spot) VALUES {spot_tuple};"
 
+        # # only for testing - write the spot records to a file:
+        # with open("spot_records.sql", "w") as f:
+        #     f.write(sql_str)
+
         self.write_postgres_records(
             query=sql_str
         )
