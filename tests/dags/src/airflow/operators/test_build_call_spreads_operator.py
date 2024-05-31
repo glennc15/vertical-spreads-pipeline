@@ -30,12 +30,14 @@ def run_build_call_spreads_operator(mocked_mongo_hook, mocked_postgres_hook):
     task.execute(context={})
 
     # get the latest expiration records:
-    sql_str = '''
-        SELECT *
-        FROM spots
-        INNER JOIN expirations
-        ON expirations.spot_id = (SELECT id FROM spots ORDER BY spot_timestamp DESC LIMIT 1)
-        ORDER BY expirations.expiration ASC;'''
+    # sql_str = '''
+    #     SELECT *
+    #     FROM spots
+    #     INNER JOIN expirations
+    #     ON expirations.spot_id = (SELECT id FROM spots ORDER BY spot_timestamp DESC LIMIT 1)
+    #     ORDER BY expirations.expiration ASC;'''
+
+    sql_str = "SELECT * FROM verticals;"
 
     conn = pg_hook.get_conn()
     cursor = conn.cursor()

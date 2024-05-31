@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS options;
+DROP TABLE IF EXISTS verticals;
 DROP TABLE IF EXISTS expirations;
 DROP TABLE IF EXISTS spots;
 
@@ -18,6 +18,14 @@ CREATE TABLE IF NOT EXISTS expirations (
     past_expiration boolean DEFAULT false,
     spot_id uuid,
     FOREIGN KEY (spot_id) REFERENCES spots(id)
+);
+
+CREATE TABLE IF NOT EXISTS verticals (
+    id uuid PRIMARY KEY,
+
+
+    expiration_id uuid,
+    FOREIGN KEY (expiration_id) REFERENCES expirations (id)
 );
 
 -- create one record:
