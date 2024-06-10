@@ -66,8 +66,6 @@ class BuildBullCallSpreadsOperator(SpreadsEtlBase):
                 },
             )
 
-            print(f"expiration = {expiraiton}")
-
             # build the SQL query to get the ohlc record from Postgres.
             # the expirations in mongo are US/Central timezone. But they are stored in mongo
             # as UTC. So converting them back to US/Central:
@@ -101,116 +99,13 @@ class BuildBullCallSpreadsOperator(SpreadsEtlBase):
 
             )
 
-            # sql_str = self.df_to_sql_str(
-                # df=bull_call_spreads,
-                # database="bull_calls"
-            # )
-
-            # print(sql_str[0:1000])
-
-            # conn = self._pg_hook.get_conn()
-            # cursor = conn.cursor()
-
-            # bull_call_spreads.to_sql(
-            #     name="bull_calls",
-            #     con=cursor
-            # )
-
-            schema = (
-                "id",
-                "short_description",
-                "long_description",
-                "expiration",
-                "spot_timestamp",
-                "spot",
-                "short_strike",
-                "long_strike",
-                "strike_delta",
-                "max_profit",
-                "risk",
-                "break_even",
-                "delta",
-                "long_iv",
-                "short_iv",
-                "expiration_close",
-                "profit",
-                "time_to_expiration",
-                "past_expiration",
-            )
-
-            # print(bull_call_spreads.reset_index(drop=True).columns)
-
-            # self._pg_hook.insert_rows(
-            #     table="bull_calls",
-            #     rows=bull_call_spreads.set_index('short_description'),
-            #     target_fields=schema
-            # )
-
-            print(self._pg_hook.get_sqlalchemy_engine)
-
+            # write the data frame to Postgres:
             bull_call_spreads.to_sql(
                 name="bull_calls",
                 con=self._pg_hook.get_sqlalchemy_engine(),
                 index=False,
                 if_exists='append',
             )
-
-    def df_to_sql_str(self, df, database):
-        '''
-
-        '''
-
-        field_tuple = (
-            "id",
-            "short_description",
-            "long_description",
-            "expiration",
-            "spot_timestamp",
-            "spot",
-            "short_strike",
-            "long_strike",
-            "strike_delta",
-            "max_profit",
-            "risk",
-            "break_even",
-            "delta",
-            "long_iv",
-            "short_iv",
-            "expiration_close",
-            "profit",
-            "time_to_expiration",
-            "past_expiration",
-        )
-        sql_str = f"INSERT INTO {database} {field_tuple} VALUES "
-
-        for idx in range(df.shape[0]):
-            data_tuple = (
-                df.loc[idx]['id'],
-                df.loc[idx]["short_description"],
-                df.loc[idx]["long_description"],
-                df.loc[idx]["expiration"],
-                df.loc[idx]["spot_timestamp"],
-                df.loc[idx]["spot"],
-                df.loc[idx]["short_strike"],
-                df.loc[idx]["long_strike"],
-                df.loc[idx]["strike_delta"],
-                df.loc[idx]["max_profit"],
-                df.loc[idx]["risk"],
-                df.loc[idx]["break_even"],
-                df.loc[idx]["delta"],
-                df.loc[idx]["long_iv"],
-                df.loc[idx]["short_iv"],
-                df.loc[idx]["expiration_close"],
-                df.loc[idx]["profit"],
-                df.loc[idx]["time_to_expiration"],
-                df.loc[idx]["past_expiration"],
-            )
-
-            sql_str += f"{data_tuple}, "
-
-        sql_str = sql_str[0:2] + ";"
-
-        return sql_str
 
 
     def build_bull_call_spreads(self, call_options, spot, expiration_spot, expiration, spot_timestamp):
