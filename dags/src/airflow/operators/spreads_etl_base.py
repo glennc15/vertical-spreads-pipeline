@@ -161,4 +161,58 @@ class SpreadsEtlBase(BaseOperator):
 
         return uuid7()
 
+    def postgres_to_dict(self, raw_postgres, key_names):
+        pass
 
+    def get_mongo_expirations(self, db, collection, timestamp):
+        '''
+
+        gets option expirations from mongo for a given timestamp.
+
+        '''
+        filter = [
+            {
+                "$match": {
+                    "timestamp": timestamp
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$expiration"
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "expiration": "$_id",
+                }
+            },
+            {
+                "$sort": {
+                    "expiration": 1
+                }
+            }
+        ]
+
+        expirations_cursor = self.aggregate_mongo_records(
+            db=db,
+            collection=collection,
+            query=filter
+        )
+
+        for expiration in expirations_cursor:
+            yield expiration
+
+    def get_call_options(self, db, collection, query):
+        option_records = self.get_mongo_records(
+            db=db,
+            collection=collection,
+            query=query,
+            sort=None,
+            limit=10000000,
+            expected_records=None
+        )
+
+        call_options = [x for x in option_records if x.get('description')[-9] == 'C']
+
+        return call_options

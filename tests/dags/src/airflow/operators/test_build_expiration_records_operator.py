@@ -69,7 +69,6 @@ def test_build_expiration_records_operator_correct_number_of_expiration_records_
     assert len(test_records) == expected_records
 
 
-    print(f"test_records[0] = {test_records[0]}")
 
 def test_build_expiration_records_operator_first_expiration_record_timestamp(mocked_mongo_hook, mocked_postgres_hook):
 

@@ -54,5 +54,14 @@ def test_build_call_spreads_operator_correct_number_of_spread_records_created(mo
         mocked_postgres_hook=mocked_postgres_hook
     )
 
-    expected_records = 300
+    expected_records = 300333
     assert len(test_records) == expected_records
+
+
+# def test_build_call_spreads_operator_spread1_long_description(mocked_mongo_hook, mocked_postgres_hook):
+#     test_records = run_build_call_spreads_operator(
+#         mocked_mongo_hook=mocked_mongo_hook,
+#         mocked_postgres_hook=mocked_postgres_hook
+#     )
+
+#     assert False

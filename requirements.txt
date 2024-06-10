@@ -2,5 +2,6 @@ apache-airflow-providers-mongo
 apache-airflow-providers-postgres
 pytest
 pytest-mock
-pytest-docker-compose
+# pytest-docker-compose
 uuid7
+pandas

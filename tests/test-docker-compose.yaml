@@ -24,6 +24,7 @@ services:
       - 5432:5432
     volumes:
       - /Users/glenn/Documents/ProgrammingStuff/spreads/test-postgres-data:/var/lib/postgresql/data:rw
+      - /Users/glenn/Documents/DataEngineering/vertical-spreads-pipeline/data:/tmp:rw
   pgadmin:
     image: dpage/pgadmin4
     environment:
