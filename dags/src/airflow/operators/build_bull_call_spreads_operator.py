@@ -104,6 +104,7 @@ class BuildBullCallSpreadsOperator(SpreadsEtlBase):
                 name="bull_calls",
                 con=self._pg_hook.get_sqlalchemy_engine(),
                 index=False,
+                index_label='id',
                 if_exists='append',
             )
 
