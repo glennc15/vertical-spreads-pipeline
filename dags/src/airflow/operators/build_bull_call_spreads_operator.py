@@ -122,17 +122,22 @@ class BuildBullCallSpreadsOperator(SpreadsEtlBase):
 
         def bull_call_profit(df_row):
             if df_row['expiration_close'] >= df_row['short_strike']:
-                profit = df_row['strike_delta'] / -df_row['risk']
+                profit = df_row['strike_delta']
+                # profit = df_row['strike_delta'] / -df_row['risk']
 
             elif df_row['expiration_close'] <= df_row['long_strike']:
-                profit = df_row['risk']
+                profit = 0
+                # profit = df_row['risk']
 
             elif df_row['long_strike'] < df_row['expiration_close'] < df_row['short_strike']:
-                profit = abs(df_row['expiration_close']-df_row['break_even']) / -df_row['risk']
+                profit = df_row['expiration_close'] - df_row['long_strike']
+
+                # profit = abs(df_row['expiration_close']-df_row['break_even']) / -df_row['risk']
 
             else:
                 raise ValueError(f"error with {df_row}")
 
+            profit = profit / -df_row['risk']
 
             return profit
 
