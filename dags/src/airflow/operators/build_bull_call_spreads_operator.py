@@ -48,6 +48,8 @@ class BuildBullCallSpreadsOperator(SpreadsEtlBase):
                 allow_zero=True
             )
 
+        print("*******************************************")
+        print(postgres_records[0][1])
         # build spreads for each expiration:
 
         expirations_generator = self.get_mongo_expirations(
@@ -89,14 +91,13 @@ class BuildBullCallSpreadsOperator(SpreadsEtlBase):
                 print(f"No expiration spot for expirations = {this_expiration}")
                 print(f"{ohlc_record}")
 
-
+            # add set expiration and spot timestamp to utc:
             bull_call_spreads = self.build_bull_call_spreads(
                 call_options=call_options,
                 spot=postgres_records[0][2],
                 expiration_spot=expiration_spot,
-                expiration=expiraiton.get('expiration'),
-                spot_timestamp=call_options[0].get('timestamp')
-
+                expiration=utc_tz.localize(expiraiton.get('expiration')),
+                spot_timestamp=utc_tz.localize(call_options[0].get('timestamp'))
             )
 
             # write the data frame to Postgres:
@@ -106,6 +107,7 @@ class BuildBullCallSpreadsOperator(SpreadsEtlBase):
                 index=False,
                 index_label='id',
                 if_exists='append',
+                chunksize=500
             )
 
 
@@ -186,7 +188,7 @@ class BuildBullCallSpreadsOperator(SpreadsEtlBase):
 
 
         bull_calls_df['time_to_expiration'] = (expiration - spot_timestamp).total_seconds()
-        bull_calls_df['past_expiration'] = datetime.datetime.now() > expiration
+        bull_calls_df['past_expiration'] = datetime.datetime.now(datetime.UTC) > expiration
 
         bull_calls_df = bull_calls_df.loc[bull_calls_df['max_profit'].ge(0)]
 
